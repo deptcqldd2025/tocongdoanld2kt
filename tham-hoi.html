@@ -7,174 +7,156 @@
     <style>
         :root { --primary-color: #004a99; --accent-color: #d32f2f; }
         body { font-family: 'Times New Roman', Times, serif; background-color: #f8f9fa; margin: 0; padding-bottom: 30px; }
-        
-        /* Giao diện trên Web */
-        .header, .footer, .btn-home { display: block; }
+        .header { background: var(--primary-color); color: white; text-align: center; padding: 20px; position: relative; }
+        .btn-home { position: absolute; top: 15px; left: 10px; background: white; color: var(--primary-color); padding: 5px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 13px; }
         .container { max-width: 700px; margin: 15px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 95%; box-sizing: border-box; }
-        label { font-weight: bold; display: block; margin-top: 15px; color: #333; font-size: 14px; }
+        label { font-weight: bold; display: block; margin-top: 15px; color: #333; font-size: 15px; }
         input, select, textarea { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-        .btn-submit { background-color: var(--accent-color); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 20px; }
-
-        /* Cấu trúc Phiếu Đề Xuất (Kết quả in) */
-        #resultTicket { display: none; color: black; line-height: 1.5; font-size: 14pt; }
-        .ticket-header-row { display: flex; justify-content: space-between; text-align: center; font-size: 12pt; }
-        .ticket-title { text-align: center; font-weight: bold; margin-top: 30px; font-size: 16pt; }
-        .ticket-content { margin-top: 25px; text-align: justify; }
-        .signature-section { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; text-align: center; }
+        input[readonly] { background-color: #e9ecef; color: #555; }
+        .section-than-nhan { display: none; background: #fff8e1; padding: 15px; border-radius: 8px; border: 1px solid #ffe082; margin-top: 10px; }
+        .btn-submit { background-color: var(--accent-color); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 25px; }
         
-        /* ĐỊNH DẠNG QUAN TRỌNG KHI IN */
+        /* Kết quả in ấn */
+        #resultTicket { display: none; line-height: 1.6; font-size: 14pt; }
+        .ticket-header { display: flex; justify-content: space-between; text-align: center; font-size: 12pt; }
+        .signature-row { display: grid; grid-template-columns: 1fr 1fr; text-align: center; margin-top: 40px; }
+        
         @media print {
-            body { background: white; padding: 0; margin: 0; }
-            .header, .footer, .btn-home, #formContainer, .no-print { display: none !important; }
-            .container { box-shadow: none; margin: 0; width: 100%; max-width: 100%; padding: 0; }
+            .no-print, .header, #formContainer { display: none !important; }
             #resultTicket { display: block !important; }
-            @page { size: A4; margin: 2cm; }
+            body { background: white; }
+            .container { box-shadow: none; width: 100%; max-width: 100%; padding: 0; }
+            @page { size: A4; margin: 1.5cm; }
         }
     </style>
 </head>
 <body>
 
-<div class="header" style="background: var(--primary-color); color: white; text-align: center; padding: 20px;">
-    <a href="index.html" class="btn-home" style="color: white; text-decoration: none; position: absolute; left: 20px;">🏠 Trang chủ</a>
-    <h1 style="margin:0;">Tổ Công đoàn LĐ 2 - KT</h1>
+<div class="header">
+    <a href="index.html" class="btn-home">🏠 TRANG CHỦ</a>
+    <h1 style="margin:0; font-size: 1.5rem;">Tổ Công đoàn LĐ 2 - KT</h1>
 </div>
 
 <div class="container" id="formContainer">
-    <h3 style="text-align: center; color: var(--accent-color);">ĐĂNG KÝ PHIẾU ĐỀ XUẤT</h3>
+    <h3 style="text-align: center; color: var(--accent-color); margin-top:0;">ĐĂNG KÝ PHIẾU ĐỀ XUẤT</h3>
     <form id="formThamHoi">
         <label>Mã số nhân viên (MSNV):</label>
-        <input type="text" id="msnv" placeholder="Nhập 4 hoặc 6 số" oninput="handleLookup()">
-        <div id="loadingName" style="font-size: 12px; color: green; margin-top: 5px;"></div>
+        <input type="text" id="msnv" placeholder="Nhập MSNV để tự động điền" oninput="handleLookup()">
+        <div id="loadingStatus" style="font-size: 12px; margin-top: 5px;"></div>
 
         <label>Họ tên ĐVCĐ:</label>
-        <input type="text" id="hoTen" readonly>
+        <input type="text" id="hoTen" readonly placeholder="Hệ thống tự nhận diện...">
 
-        <label>Bộ phận:</label>
-        <select id="boPhan">
-            <option value="KTVH">Phòng KTVH</option>
-            <option value="QLLD2">Đội QLLĐ 2</option>
-        </select>
+        <label>Đơn vị công tác:</label>
+        <input type="text" id="boPhan" readonly placeholder="Lấy từ cột Đơn vị...">
 
         <label>Lý do thăm hỏi:</label>
-        <select id="chiTietLyDo" onchange="updateMoney()">
-            <option value="">-- Chọn nội dung chi --</option>
-            <option data-tien="200.000" value="ĐVCĐ ốm đau 2-4 ngày">Đoàn viên ốm đau 2-4 ngày (200k)</option>
-            <option data-tien="500.000" value="ĐVCĐ nằm viện >= 5 ngày">Đoàn viên nằm viện >= 5 ngày (500k)</option>
-            <option data-tien="200.000" value="Thân nhân điều trị nhà">Thân nhân điều trị tại nhà (200k)</option>
-            <option data-tien="400.000" value="Thân nhân nằm viện">Thân nhân nằm viện (400k)</option>
-            <option data-tien="1.000.000" value="ĐVCĐ kết hôn">Đoàn viên kết hôn (1.000k)</option>
-            <option data-tien="1.000.000" value="Việc hiếu">Việc hiếu (Tứ thân phụ mẫu, vợ/chồng/con) (1.000k)</option>
+        <select id="chiTietLyDo" onchange="toggleThanNhan()" required>
+            <option value="">-- Chọn nội dung --</option>
+            <option data-tien="200.000" value="ĐVCĐ ốm đau 2-4 ngày">1. Đoàn viên ốm đau từ 2 đến 4 ngày (200k)</option>
+            <option data-tien="500.000" value="ĐVCĐ nằm viện >= 5 ngày">2. Đoàn viên nằm viện từ 5 ngày trở lên (500k)</option>
+            <option data-tien="200.000" data-type="TN" value="Thân nhân điều trị tại nhà">3. Thân nhân điều trị tại nhà (200k)</option>
+            <option data-tien="400.000" data-type="TN" value="Thân nhân điều trị tại bệnh viện">4. Thân nhân điều trị tại bệnh viện (400k)</option>
+            <option data-tien="1.000.000" value="ĐVCĐ kết hôn">5. Đoàn viên kết hôn lần đầu (1.000k)</option>
+            <option data-tien="1.000.000" data-type="TN" value="Việc hiếu">6. Việc hiếu (Tứ thân phụ mẫu, vợ, chồng, con) (1.000k)</option>
         </select>
+
+        <div id="boxThanNhan" class="section-than-nhan">
+            <label>Họ tên Thân nhân:</label>
+            <input type="text" id="tenThanNhan" placeholder="Nhập đầy đủ họ tên người thân">
+            <label>Mối quan hệ:</label>
+            <select id="moiQuanHe">
+                <option value="Cha ruột">Cha ruột</option>
+                <option value="Mẹ ruột">Mẹ ruột</option>
+                <option value="Cha Vợ/Chồng">Cha Vợ/Chồng</option>
+                <option value="Mẹ Vợ/Chồng">Mẹ Vợ/Chồng</option>
+                <option value="Vợ/Chồng">Vợ/Chồng</option>
+                <option value="Con">Con</option>
+            </select>
+        </div>
 
         <button type="button" class="btn-submit" onclick="generateTicket()">XUẤT PHIẾU ĐỀ XUẤT</button>
     </form>
 </div>
 
 <div class="container" id="resultTicket">
-    <div class="ticket-header-row">
-        <div>
-            CÔNG ĐOÀN CÔNG TY <br>
-            <b>LƯỚI ĐIỆN CAO THẾ TP.HCM</b> <br>
-            TỔ CÔNG ĐOÀN <span id="resToCD">LĐ2-KT</span> <br>
-            _______________________
-        </div>
-        <div>
-            <b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b> <br>
-            Độc lập – Tự do – Hạnh phúc <br>
-            _______________________________ <br>
-            <i>Tân Sơn Hòa, <span id="resFullDate"></span></i>
-        </div>
+    <div class="ticket-header">
+        <div>CÔNG ĐOÀN CÔNG TY <br><b>LƯỚI ĐIỆN CAO THẾ TP.HCM</b> <br>TỔ CÔNG ĐOÀN LĐ2-KT <br>_________________</div>
+        <div><b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b> <br>Độc lập – Tự do – Hạnh phúc <br>_________________________ <br><i>Tân Sơn Hòa, <span id="resFullDate"></span></i></div>
     </div>
-
-    <div class="ticket-title">
-        PHIẾU ĐỀ XUẤT <br>
-        THĂM HỎI ĐOÀN VIÊN CÔNG ĐOÀN <br>
-        ________________
-    </div>
-
-    <div class="ticket-content">
-        Tôi tên: <b id="resLeaderName">Trần Công Đẹp</b>. Tổ trưởng Tổ công đoàn <b id="resToCD2">LĐ2-KT</b>. <br>
-        Sau khi đã đọc và hiểu rõ về Quy chế thăm hỏi, Quy định về thăm hỏi công đoàn viên và Quy chế thu chi quỹ công đoàn. <br>
-        Hiện nay, tại Tổ công đoàn <b id="resToCD3">LĐ2-KT</b> có trường hợp cần thăm hỏi theo Quy chế thăm hỏi. Đề nghị Công đoàn Công ty Lưới điện cao thế TP.HCM chi thăm hỏi cho đoàn viên công đoàn theo quy chế thăm hỏi như sau: <br><br>
-        - Họ tên đoàn viên công đoàn cần thăm hỏi: <b id="resName"></b> (MSNV: <b id="resMsnv"></b>)<br>
+    <div style="text-align: center; font-weight: bold; margin-top: 30px; font-size: 16pt;">PHIẾU ĐỀ XUẤT <br> THĂM HỎI ĐOÀN VIÊN CÔNG ĐOÀN</div>
+    <div style="margin-top: 20px; text-align: justify;">
+        Tôi tên: <b>Trần Công Đẹp</b>. Tổ trưởng Tổ công đoàn <b>LĐ2-KT</b>. <br>
+        Hiện nay, tại Tổ công đoàn có trường hợp cần thăm hỏi theo Quy chế. Đề nghị Công đoàn Công ty chi thăm hỏi cho đoàn viên công đoàn như sau: <br><br>
+        - Họ tên đoàn viên: <b id="resName"></b> (MSNV: <b id="resMsnv"></b>) <br>
         - Thuộc bộ phận: <b id="resBoPhan"></b> <br>
-        - Lý do thăm hỏi: <b id="resLyDo"></b> <br>
-        - Số tiền thăm hỏi: <b id="resTien"></b> đồng (Bằng chữ: <i id="resChu"></i> đồng)
+        - Lý do thăm hỏi: <span id="resLyDoDisplay"></span> <br>
+        - Số tiền đề xuất: <b id="resTien"></b> đồng (Bằng chữ: <i id="resChu"></i> đồng)
     </div>
-
-    <div class="signature-section">
-        <div>
-            <b>TỔ TRƯỞNG</b> <br>
-            <i>TỔ CÔNG ĐOÀN LĐ2-KT</i> <br><br><br><br>
-            <b>Trần Công Đẹp</b>
-        </div>
-        <div>
-            <b>NGƯỜI LẬP</b> <br><br><br><br><br>
-            <b id="resNguoiLap"></b>
-        </div>
+    <div class="signature-row">
+        <div><b>TỔ TRƯỞNG</b> <br><br><br><br><b>Trần Công Đẹp</b></div>
+        <div><b>NGƯỜI LẬP</b> <br><br><br><br><b id="resNguoiLap"></b></div>
     </div>
-
-    <div class="no-print" style="margin-top: 50px; text-align: center;">
-        <button class="btn-submit" onclick="window.print()" style="background:#444; width: auto; padding: 10px 40px;">🖨️ IN PHIẾU NGAY</button>
-        <button class="btn-submit" onclick="location.reload()" style="background:#ccc; color: black; width: auto; padding: 10px 40px;">QUAY LẠI</button>
+    <div class="no-print" style="margin-top: 40px; text-align: center;">
+        <button class="btn-submit" onclick="window.print()" style="background:#333; width:auto; padding: 10px 40px;">🖨️ IN PHIẾU</button>
+        <button class="btn-submit" onclick="location.reload()" style="background:#ccc; color:black; width:auto; padding: 10px 40px;">LẬP MỚI</button>
     </div>
 </div>
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6KpeyKNXEdEjM0MR4BFEU17JHvIMsLb8esPLaD-8weV9yrq-YjaZPQavQn7JS74r1kQ/exec";
 
-    function updateMoney() { /* Tự động cập nhật số tiền khi chọn lý do */ }
-
-    // Chuyển số tiền thành chữ (Đơn giản cho 200k - 1tr)
-    function docTien(soTien) {
-        if (soTien === "200.000") return "Hai trăm ngàn";
-        if (soTien === "300.000") return "Ba trăm ngàn";
-        if (soTien === "400.000") return "Bốn trăm ngàn";
-        if (soTien === "500.000") return "Năm trăm ngàn";
-        if (soTien === "1.000.000") return "Một triệu";
-        return "";
-    }
-
-    function generateTicket() {
-        const hoTen = document.getElementById('hoTen').value;
-        const boPhanVal = document.getElementById('boPhan').value;
-        const lyDoElem = document.getElementById('chiTietLyDo');
-        
-        if (!hoTen || !lyDoElem.value) return alert("Vui lòng điền đủ thông tin!");
-
-        const msnv = document.getElementById('msnv').value;
-        const lyDoText = lyDoElem.options[lyDoElem.selectedIndex].text;
-        const soTien = lyDoElem.options[lyDoElem.selectedIndex].getAttribute('data-tien');
-        const nguoiLap = (boPhanVal === "KTVH") ? "Trương Nguyễn Hoài Thương" : "Trần Ba Phúc";
-
-        // Đổ dữ liệu vào mẫu phiếu
-        document.getElementById('resName').innerText = hoTen;
-        document.getElementById('resMsnv').innerText = msnv;
-        document.getElementById('resBoPhan').innerText = (boPhanVal === "KTVH") ? "Phòng KTVH" : "Đội QLLĐ 2";
-        document.getElementById('resLyDo').innerText = lyDoText;
-        document.getElementById('resTien').innerText = soTien;
-        document.getElementById('resChu').innerText = docTien(soTien);
-        document.getElementById('resNguoiLap').innerText = nguoiLap;
-        
-        const now = new Date();
-        document.getElementById('resFullDate').innerText = `ngày ${now.getDate()} tháng ${now.getMonth()+1} năm 2026`;
-
-        // Hiển thị phiếu in
-        document.getElementById('formContainer').style.display = "none";
-        document.getElementById('resultTicket').style.display = "block";
+    function toggleThanNhan() {
+        const select = document.getElementById('chiTietLyDo');
+        const isTN = select.options[select.selectedIndex].getAttribute('data-type') === 'TN';
+        document.getElementById('boxThanNhan').style.display = isTN ? "block" : "none";
     }
 
     function handleLookup() {
         const msnv = document.getElementById('msnv').value.trim();
         if (msnv.length >= 4) {
-            document.getElementById('loadingName').innerText = "🔍 Đang tìm...";
+            document.getElementById('loadingStatus').innerText = "🔍 Đang tìm kiếm ĐVCĐ và Đơn vị...";
             fetch(`${WEB_APP_URL}?action=lookup&msnv=${msnv}`)
             .then(res => res.json())
             .then(data => {
-                document.getElementById('hoTen').value = (data.hoTen !== "Không tìm thấy") ? data.hoTen : "";
-                document.getElementById('loadingName').innerText = (data.hoTen !== "Không tìm thấy") ? "✅ Xác nhận!" : "❌ Không thấy!";
+                if (data.hoTen !== "Không tìm thấy") {
+                    document.getElementById('hoTen').value = data.hoTen;
+                    document.getElementById('boPhan').value = data.donVi || "LĐ2-KT"; // Lấy từ cột F
+                    document.getElementById('loadingStatus').innerHTML = "✅ Khớp dữ liệu";
+                } else {
+                    document.getElementById('loadingStatus').innerHTML = "❌ Không thấy MSNV này";
+                }
             });
         }
+    }
+
+    function generateTicket() {
+        const hoTen = document.getElementById('hoTen').value;
+        const boPhan = document.getElementById('boPhan').value;
+        const select = document.getElementById('chiTietLyDo');
+        if (!hoTen || !select.value) return alert("Vui lòng nhập MSNV và Lý do!");
+
+        // Logic Người lập phiếu
+        const nguoiLap = (boPhan.includes("KTVH")) ? "Trương Nguyễn Hoài Thương" : "Trần Bá Phúc";
+        
+        let lyDoHienThi = select.options[select.selectedIndex].text;
+        if (select.options[select.selectedIndex].getAttribute('data-type') === 'TN') {
+            const tenTN = document.getElementById('tenThanNhan').value;
+            const quanHe = document.getElementById('moiQuanHe').value;
+            if(!tenTN) return alert("Vui lòng nhập tên Thân nhân!");
+            lyDoHienThi += ` (${quanHe}: ${tenTN})`;
+        }
+
+        document.getElementById('resName').innerText = hoTen;
+        document.getElementById('resMsnv').innerText = document.getElementById('msnv').value;
+        document.getElementById('resBoPhan').innerText = boPhan;
+        document.getElementById('resLyDoDisplay').innerText = lyDoHienThi;
+        document.getElementById('resTien').innerText = select.options[select.selectedIndex].getAttribute('data-tien');
+        document.getElementById('resNguoiLap').innerText = nguoiLap;
+        document.getElementById('resFullDate').innerText = `ngày ${new Date().getDate()} tháng ${new Date().getMonth()+1} năm 2026`;
+
+        document.getElementById('formContainer').style.display = "none";
+        document.getElementById('resultTicket').style.display = "block";
     }
 </script>
 </body>

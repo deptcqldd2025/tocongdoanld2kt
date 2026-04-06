@@ -3,29 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký Thăm hỏi | Tổ Công đoàn LĐ 2 - KT</title>
+    <title>Phiếu Thăm Hỏi v3.2 | Tổ CD LĐ2-KT</title>
     <style>
         :root { --primary-color: #004a99; --accent-color: #d32f2f; }
-        body { font-family: 'Times New Roman', Times, serif; background-color: #f8f9fa; margin: 0; padding-bottom: 30px; }
+        body { font-family: 'Times New Roman', Times, serif; background-color: #f4f7f6; margin: 0; padding-bottom: 50px; }
         .header { background: var(--primary-color); color: white; text-align: center; padding: 20px; position: relative; }
-        .btn-home { position: absolute; top: 15px; left: 10px; background: white; color: var(--primary-color); padding: 5px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 13px; }
-        .container { max-width: 700px; margin: 15px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 95%; box-sizing: border-box; }
-        label { font-weight: bold; display: block; margin-top: 15px; color: #333; font-size: 15px; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-        input[readonly] { background-color: #e9ecef; color: #555; }
-        .section-than-nhan { display: none; background: #fff8e1; padding: 15px; border-radius: 8px; border: 1px solid #ffe082; margin-top: 10px; }
-        .btn-submit { background-color: var(--accent-color); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 25px; }
+        .btn-home { position: absolute; top: 15px; left: 10px; background: white; color: var(--primary-color); padding: 6px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 13px; }
+        .container { max-width: 750px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 95%; box-sizing: border-box; }
+        label { font-weight: bold; display: block; margin-top: 15px; font-size: 15px; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 15px; }
+        input[readonly] { background-color: #eee; }
+        .tn-box { display: none; background: #fff9c4; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #fbc02d; }
+        .btn-submit { background: var(--accent-color); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 17px; cursor: pointer; margin-top: 25px; }
         
-        /* Kết quả in ấn khớp mẫu Docx */
+        /* Giao diện in ấn chuẩn Docx */
         #resultTicket { display: none; line-height: 1.6; font-size: 14pt; color: black; }
         .ticket-header { display: flex; justify-content: space-between; text-align: center; font-size: 12pt; }
-        .signature-row { display: grid; grid-template-columns: 1fr 1fr; text-align: center; margin-top: 40px; }
-        
+        .signature-section { display: grid; grid-template-columns: 1fr 1fr; text-align: center; margin-top: 50px; }
+
         @media print {
-            .no-print, .header, #formContainer, .footer-web { display: none !important; }
+            .no-print, .header, #formContainer { display: none !important; }
             #resultTicket { display: block !important; }
-            body { background: white; }
-            .container { box-shadow: none; width: 100%; max-width: 100%; padding: 0; }
+            .container { box-shadow: none; width: 100%; padding: 0; }
             @page { size: A4; margin: 1.5cm; }
         }
     </style>
@@ -34,134 +33,135 @@
 
 <div class="header">
     <a href="index.html" class="btn-home">🏠 TRANG CHỦ</a>
-    <h1 style="margin:0; font-size: 1.5rem;">Tổ Công đoàn LĐ 2 - KT</h1>
+    <h1 style="margin:0;">Hệ thống Thăm hỏi Công đoàn</h1>
+    <small>Phiên bản theo dõi: v3.2</small>
 </div>
 
 <div class="container" id="formContainer">
-    <h3 style="text-align: center; color: var(--accent-color); margin-top:0;">ĐĂNG KÝ PHIẾU ĐỀ XUẤT</h3>
-    <form id="formThamHoi">
+    <h3 style="text-align: center; color: var(--accent-color); margin-top: 0;">LẬP PHIẾU ĐỀ XUẤT THĂM HỎI</h3>
+    <form id="mainForm">
         <label>Mã số nhân viên (MSNV):</label>
-        <input type="text" id="msnv" placeholder="Nhập MSNV" oninput="handleLookup()">
-        <div id="loadingStatus" style="font-size: 12px; margin-top: 5px;"></div>
+        <input type="text" id="msnv" placeholder="Nhập MSNV để tra cứu..." oninput="lookupMember()">
+        <div id="status" style="font-size: 12px; margin-top: 5px; font-style: italic;"></div>
 
-        <label>Họ tên ĐVCĐ:</label>
-        <input type="text" id="hoTen" readonly>
+        <label>Họ tên Đoàn viên:</label>
+        <input type="text" id="name" readonly>
 
-        <label>Đơn vị (Cột G):</label>
-        <input type="text" id="boPhan" readonly>
-        
-        <input type="hidden" id="gioiTinh"> <label>Lý do thăm hỏi:</label>
-        <select id="chiTietLyDo" onchange="toggleThanNhan()" required>
-            <option value="">-- Chọn nội dung --</option>
-            <option data-tien="200.000" value="ĐVCĐ ốm đau 2-4 ngày">1. Đoàn viên ốm đau từ 2 đến 4 ngày (200k)</option>
-            <option data-tien="500.000" value="ĐVCĐ nằm viện >= 5 ngày">2. Đoàn viên nằm viện từ 5 ngày trở lên (500k)</option>
-            <option data-tien="200.000" data-type="TN" value="Thân nhân điều trị tại nhà">3. Thân nhân điều trị tại nhà (200k)</option>
-            <option data-tien="400.000" data-type="TN" value="Thân nhân điều trị tại bệnh viện">4. Thân nhân điều trị tại bệnh viện (400k)</option>
-            <option data-tien="1.000.000" value="ĐVCĐ kết hôn">5. Đoàn viên kết hôn lần đầu (1.000k)</option>
-            <option data-tien="1.000.000" data-type="TN" value="Việc hiếu">6. Việc hiếu (Tứ thân phụ mẫu, vợ, chồng, con) (1.000k)</option>
+        <label>Bộ phận (Cột G):</label>
+        <input type="text" id="dept" readonly>
+
+        <input type="hidden" id="gender"> <label>Lý do thăm hỏi:</label>
+        <select id="reason" onchange="checkReasonType()">
+            <option value="">-- Chọn lý do --</option>
+            <option data-amt="200.000" value="ĐVCĐ ốm đau 2-4 ngày">Đoàn viên ốm đau 2-4 ngày (200k)</option>
+            <option data-amt="500.000" value="ĐVCĐ nằm viện >= 5 ngày">Đoàn viên nằm viện >= 5 ngày (500k)</option>
+            <option data-amt="200.000" data-is-tn="true" value="Thân nhân điều trị nhà">Thân nhân điều trị tại nhà (200k)</option>
+            <option data-amt="400.000" data-is-tn="true" value="Thân nhân nằm viện">Thân nhân nằm viện (400k)</option>
+            <option data-amt="1.000.000" value="ĐVCĐ kết hôn">Đoàn viên kết hôn (1.000k)</option>
+            <option data-amt="1.000.000" data-is-tn="true" value="Việc hiếu">Việc hiếu (Tứ thân phụ mẫu, vợ/chồng/con) (1.000k)</option>
         </select>
 
-        <div id="boxThanNhan" class="section-than-nhan">
+        <div id="tnSection" class="tn-box">
+            <label>Mối quan hệ thân nhân:</label>
+            <select id="relation"></select>
             <label>Họ tên Thân nhân:</label>
-            <input type="text" id="tenThanNhan" placeholder="Nhập họ tên người thân">
-            <label>Mối quan hệ:</label>
-            <select id="moiQuanHe">
-                </select>
+            <input type="text" id="tnName" placeholder="Nhập tên người thân">
         </div>
 
-        <button type="button" class="btn-submit" onclick="generateTicket()">XUẤT PHIẾU ĐỀ XUẤT</button>
+        <button type="button" class="btn-submit" onclick="showTicket()">XUẤT PHIẾU IN</button>
     </form>
-    <p class="footer-web" style="text-align:center; font-size:12px; color:#aaa; margin-top:20px;">Phiên bản: v3.1 | Thiết kế: Trần Công Đẹp</p>
 </div>
 
 <div class="container" id="resultTicket">
     <div class="ticket-header">
         <div>CÔNG ĐOÀN CÔNG TY <br><b>LƯỚI ĐIỆN CAO THẾ TP.HCM</b> <br>TỔ CÔNG ĐOÀN LĐ2-KT <br>_________________</div>
-        <div><b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b> <br>Độc lập – Tự do – Hạnh phúc <br>_________________________ <br><i>Tân Sơn Hòa, <span id="resFullDate"></span></i></div>
+        <div><b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b> <br>Độc lập – Tự do – Hạnh phúc <br>_________________________ <br><i>Tân Sơn Hòa, <span id="printDate"></span></i></div>
     </div>
-    <div style="text-align: center; font-weight: bold; margin-top: 30px; font-size: 16pt;">PHIẾU ĐỀ XUẤT <br> THĂM HỎI ĐOÀN VIÊN CÔNG ĐOÀN</div>
-    <div style="margin-top: 20px; text-align: justify;">
+
+    <div style="text-align: center; font-weight: bold; margin-top: 35px; font-size: 16pt;">PHIẾU ĐỀ XUẤT <br> THĂM HỎI ĐOÀN VIÊN CÔNG ĐOÀN</div>
+
+    <div style="margin-top: 25px; text-align: justify;">
         Tôi tên: <b>Trần Công Đẹp</b>. Tổ trưởng Tổ công đoàn <b>LĐ2-KT</b>. <br>
         Hiện nay, tại Tổ công đoàn có trường hợp cần thăm hỏi theo Quy chế. Đề nghị Công đoàn Công ty chi thăm hỏi cho đoàn viên công đoàn như sau: <br><br>
-        - Họ tên đoàn viên: <b id="resName"></b> (MSNV: <b id="resMsnv"></b>) <br>
-        - Thuộc bộ phận: <b id="resBoPhan"></b> <br>
-        - Lý do thăm hỏi: <span id="resLyDoDisplay"></span> <br>
-        - Số tiền đề xuất: <b id="resTien"></b> đồng (Bằng chữ: <i id="resChu"></i> đồng)
+        - Họ tên đoàn viên: <b id="pName"></b> (MSNV: <b id="pMsnv"></b>) <br>
+        - Thuộc bộ phận: <b id="pDept"></b> <br>
+        - Lý do thăm hỏi: <span id="pReason"></span> <br>
+        - Số tiền đề xuất: <b id="pAmt"></b> đồng (Bằng chữ: <i id="pWord"></i> đồng)
     </div>
-    <div class="signature-row">
+
+    <div class="signature-section">
         <div><b>TỔ TRƯỞNG</b> <br><br><br><br><b>Trần Công Đẹp</b></div>
-        <div><b>NGƯỜI LẬP</b> <br><br><br><br><b id="resNguoiLap"></b></div>
+        <div><b>NGƯỜI LẬP</b> <br><br><br><br><b id="pAuthor"></b></div>
     </div>
-    <div class="no-print" style="margin-top: 40px; text-align: center;">
-        <button class="btn-submit" onclick="window.print()" style="background:#333; width:auto; padding: 10px 40px;">🖨️ IN PHIẾU</button>
-        <button class="btn-submit" onclick="location.reload()" style="background:#ccc; color:black; width:auto; padding: 10px 40px;">LẬP MỚI</button>
+
+    <div class="no-print" style="margin-top: 50px; text-align: center;">
+        <button class="btn-submit" onclick="window.print()" style="background:#444; width:auto; padding: 10px 40px;">🖨️ IN PHIẾU NGAY</button>
+        <button class="btn-submit" onclick="location.reload()" style="background:#999; width:auto; padding: 10px 40px;">QUAY LẠI</button>
     </div>
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6KpeyKNXEdEjM0MR4BFEU17JHvIMsLb8esPLaD-8weV9yrq-YjaZPQavQn7JS74r1kQ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbx6KpeyKNXEdEjM0MR4BFEU17JHvIMsLb8esPLaD-8weV9yrq-YjaZPQavQn7JS74r1kQ/exec";
 
-    function toggleThanNhan() {
-        const select = document.getElementById('chiTietLyDo');
-        const isTN = select.options[select.selectedIndex].getAttribute('data-type') === 'TN';
-        document.getElementById('boxThanNhan').style.display = isTN ? "block" : "none";
-        if(isTN) updateMoiQuanHeOptions();
-    }
-
-    function updateMoiQuanHeOptions() {
-        const gt = document.getElementById('gioiTinh').value;
-        const selectMQH = document.getElementById('moiQuanHe');
-        selectMQH.innerHTML = '<option value="Cha ruột">Cha ruột</option><option value="Mẹ ruột">Mẹ ruột</option><option value="Con">Con</option>';
-        
-        if (gt === "Nam") {
-            selectMQH.innerHTML += '<option value="Cha vợ">Cha vợ</option><option value="Mẹ vợ">Mẹ vợ</option><option value="Vợ">Vợ</option>';
-        } else if (gt === "Nữ") {
-            selectMQH.innerHTML += '<option value="Cha chồng">Cha chồng</option><option value="Mẹ chồng">Mẹ chồng</option><option value="Chồng">Chồng</option>';
-        }
-    }
-
-    function handleLookup() {
-        const msnv = document.getElementById('msnv').value.trim();
-        if (msnv.length >= 4) {
-            document.getElementById('loadingStatus').innerText = "🔍 Đang tra cứu danh sách...";
-            fetch(`${WEB_APP_URL}?action=lookup&msnv=${msnv}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.hoTen !== "Không tìm thấy") {
-                    document.getElementById('hoTen').value = data.hoTen;
-                    document.getElementById('boPhan').value = data.donVi; // Đã cấu hình lấy từ cột G
-                    document.getElementById('gioiTinh').value = data.gioiTinh; // Lấy từ cột D
-                    document.getElementById('loadingStatus').innerHTML = "✅ Đã nhận diện";
+    function lookupMember() {
+        const id = document.getElementById('msnv').value;
+        if(id.length >= 4) {
+            document.getElementById('status').innerText = "🔍 Đang tìm...";
+            fetch(`${API_URL}?action=lookup&msnv=${id}`)
+            .then(r => r.json())
+            .then(d => {
+                if(d.hoTen !== "Không tìm thấy") {
+                    document.getElementById('name').value = d.hoTen;
+                    document.getElementById('dept').value = d.donVi; // Cột G
+                    document.getElementById('gender').value = d.gioiTinh; // Cột D
+                    document.getElementById('status').innerText = "✅ Đã tìm thấy ĐVCĐ";
                 } else {
-                    document.getElementById('loadingStatus').innerHTML = "❌ Không tìm thấy";
+                    document.getElementById('status').innerText = "❌ Không có trong danh sách";
                 }
             });
         }
     }
 
-    function generateTicket() {
-        const hoTen = document.getElementById('hoTen').value;
-        const boPhan = document.getElementById('boPhan').value;
-        const select = document.getElementById('chiTietLyDo');
-        if (!hoTen || !select.value) return alert("Vui lòng điền đủ thông tin!");
-
-        const nguoiLap = (boPhan.includes("KTVH")) ? "Trương Nguyễn Hoài Thương" : "Trần Bá Phúc";
-        let lyDoHienThi = select.options[select.selectedIndex].text;
+    function checkReasonType() {
+        const sel = document.getElementById('reason');
+        const isTN = sel.options[sel.selectedIndex].getAttribute('data-is-tn') === 'true';
+        document.getElementById('tnSection').style.display = isTN ? "block" : "none";
         
-        if (select.options[select.selectedIndex].getAttribute('data-type') === 'TN') {
-            const tenTN = document.getElementById('tenThanNhan').value;
-            const quanHe = document.getElementById('moiQuanHe').value;
-            if(!tenTN) return alert("Vui lòng nhập tên Thân nhân!");
-            lyDoHienThi += ` (${quanHe}: ${tenTN})`;
+        if(isTN) {
+            const gt = document.getElementById('gender').value;
+            const rel = document.getElementById('relation');
+            rel.innerHTML = '<option value="Cha ruột">Cha ruột</option><option value="Mẹ ruột">Mẹ ruột</option><option value="Con">Con</option>';
+            if(gt === "Nam") {
+                rel.innerHTML += '<option value="Cha vợ">Cha vợ</option><option value="Mẹ vợ">Mẹ vợ</option><option value="Vợ">Vợ</option>';
+            } else {
+                rel.innerHTML += '<option value="Cha chồng">Cha chồng</option><option value="Mẹ chồng">Mẹ chồng</option><option value="Chồng">Chồng</option>';
+            }
+        }
+    }
+
+    function showTicket() {
+        const name = document.getElementById('name').value;
+        const dept = document.getElementById('dept').value;
+        const reasonSel = document.getElementById('reason');
+        if(!name || !reasonSel.value) return alert("Vui lòng điền đủ thông tin!");
+
+        // Logic Người lập 
+        const author = dept.includes("KTVH") ? "Trương Nguyễn Hoài Thương" : "Trần Bá Phúc";
+        let fullReason = reasonSel.value;
+        if(reasonSel.options[reasonSel.selectedIndex].getAttribute('data-is-tn') === 'true') {
+            fullReason += ` (${document.getElementById('relation').value}: ${document.getElementById('tnName').value})`;
         }
 
-        document.getElementById('resName').innerText = hoTen;
-        document.getElementById('resMsnv').innerText = document.getElementById('msnv').value;
-        document.getElementById('resBoPhan').innerText = boPhan;
-        document.getElementById('resLyDoDisplay').innerText = lyDoHienThi;
-        document.getElementById('resTien').innerText = select.options[select.selectedIndex].getAttribute('data-tien');
-        document.getElementById('resNguoiLap').innerText = nguoiLap;
-        document.getElementById('resFullDate').innerText = `ngày ${new Date().getDate()} tháng ${new Date().getMonth()+1} năm 2026`;
+        document.getElementById('pName').innerText = name;
+        document.getElementById('pMsnv').innerText = document.getElementById('msnv').value;
+        document.getElementById('pDept').innerText = dept;
+        document.getElementById('pReason').innerText = fullReason;
+        document.getElementById('pAmt').innerText = reasonSel.options[reasonSel.selectedIndex].getAttribute('data-amt');
+        document.getElementById('pAuthor').innerText = author;
+        document.getElementById('pWord').innerText = (reasonSel.options[reasonSel.selectedIndex].getAttribute('data-amt') === "1.000.000") ? "Một triệu" : "Hàng trăm ngàn"; // Có thể mở rộng hàm đọc số
+
+        const now = new Date();
+        document.getElementById('printDate').innerText = `ngày ${now.getDate()} tháng ${now.getMonth()+1} năm 2026`;
 
         document.getElementById('formContainer').style.display = "none";
         document.getElementById('resultTicket').style.display = "block";

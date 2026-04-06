@@ -3,134 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Quản lý Tổ Công đoàn LĐ 2 - KT</title>
+    <title>Hệ thống Công đoàn LĐ2-KT | Đăng nhập</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
     <style>
-        :root { 
-            --primary-color: #004a99; 
-            --accent-color: #d32f2f; 
-            --bg-color: #f0f2f5;
-        }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: var(--bg-color); 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 100vh; 
-        }
-        .header { 
-            background: var(--primary-color); 
-            color: white; 
-            text-align: center; 
-            padding: 30px 15px; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        .header h1 { margin: 0; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 1px; }
-        .header p { margin: 10px 0 0; opacity: 0.9; font-size: 14px; }
-
-        .container { 
-            flex: 1; 
-            max-width: 1000px; 
-            margin: 0 auto; 
-            padding: 40px 20px; 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-            gap: 25px; 
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .nav-card { 
-            background: white; 
-            padding: 30px; 
-            text-align: center; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
-            text-decoration: none; 
-            color: #333; 
-            transition: all 0.3s ease; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center;
-            border-top: 5px solid transparent;
-        }
-        .nav-card:hover { 
-            transform: translateY(-8px); 
-            box-shadow: 0 12px 30px rgba(0,0,0,0.15); 
-        }
-        .card-thongbao:hover { border-top-color: var(--primary-color); }
-        .card-thamhoi:hover { border-top-color: var(--accent-color); }
-
-        .icon-circle {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            margin-bottom: 20px;
-        }
-        .bg-blue { background-color: #e7f0ff; }
-        .bg-red { background-color: #ffebee; }
-
-        .nav-card h3 { 
-            margin: 10px 0; 
-            font-size: 1.4rem; 
-            color: var(--primary-color); 
-        }
-        .card-thamhoi h3 { color: var(--accent-color); }
-
-        .nav-card p { 
-            font-size: 15px; 
-            color: #666; 
-            line-height: 1.5; 
-            margin: 0;
-        }
-
-        .footer { 
-            background: #222; 
-            color: #aaa; 
-            text-align: center; 
-            padding: 20px; 
-            font-size: 13px; 
-            line-height: 1.8;
-        }
-        .footer b { color: #fff; }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .header h1 { font-size: 1.4rem; }
-            .container { padding: 20px; }
-        }
+        :root { --primary: #004a99; --accent: #d32f2f; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 15px; }
+        .login-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; box-sizing: border-box; }
+        .logo { text-align: center; margin-bottom: 20px; color: var(--primary); font-weight: bold; font-size: 22px; line-height: 1.2; }
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; color: #444; }
+        .input-group { position: relative; margin-top: 5px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; outline: none; }
+        input:focus { border-color: var(--primary); }
+        .toggle-password { position: absolute; right: 12px; top: 11px; cursor: pointer; font-size: 18px; }
+        
+        .btn { width: 100%; padding: 13px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 16px; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #003366; }
+        .btn-outline { background: none; border: 1px solid var(--primary); color: var(--primary); margin-top: 10px; }
+        
+        .auth-toggle { text-align: center; margin-top: 20px; font-size: 14px; color: #666; }
+        .auth-toggle span { color: var(--primary); cursor: pointer; font-weight: bold; text-decoration: underline; }
+        .hidden { display: none; }
+        #statusMsg { font-size: 13px; text-align: center; margin-top: 10px; min-height: 20px; font-weight: 500; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>Tổ Công đoàn LĐ 2 - KT</h1>
-        <p>Hệ thống hỗ trợ Đoàn viên Công đoàn trực tuyến</p>
+<div class="login-card">
+    <div class="logo">TỔ CÔNG ĐOÀN LĐ2-KT<br><span style="font-size: 14px; font-weight: normal; color: #666;">Dự án QLDD-2025</span></div>
+    <div id="statusMsg"></div>
+
+    <div id="loginForm">
+        <label>Email đoàn viên:</label>
+        <input type="email" id="loginEmail" placeholder="Nhập email đã đăng ký">
+        
+        <label>Mật khẩu:</label>
+        <div class="input-group">
+            <input type="password" id="loginPass" placeholder="Nhập mật khẩu">
+            <span class="toggle-password" onclick="togglePass('loginPass')">👁️</span>
+        </div>
+        
+        <button class="btn btn-primary" onclick="handleLogin()">ĐĂNG NHẬP</button>
+        <p style="text-align:right; font-size:12px; margin-top:10px;"><span style="color:var(--accent); cursor:pointer; font-weight:bold;" onclick="forgotPass()">Quên mật khẩu?</span></p>
+        
+        <div class="auth-toggle">Chưa có tài khoản? <span onclick="showRegister()">Đăng ký thành viên</span></div>
     </div>
 
-    <div class="container">
-        <a href="thong-bao.html" class="nav-card card-thongbao">
-            <div class="icon-circle bg-blue">📢</div>
-            <h3>BẢNG THÔNG BÁO</h3>
-            <p>Tra cứu văn bản, danh sách chúc mừng sinh nhật và các thông báo mới nhất từ Công đoàn.</p>
-        </a>
+    <div id="registerForm" class="hidden">
+        <label>Mã số nhân viên (MSNV):</label>
+        <input type="text" id="regMsnv" placeholder="Ví dụ: 001702" oninput="lookupName()">
+        <div id="regName" style="font-size:12px; color:blue; margin-top:5px; font-weight: bold;"></div>
 
-        <a href="tham-hoi.html" class="nav-card card-thamhoi">
-            <div class="icon-circle bg-red">🏥</div>
-            <h3>ĐĂNG KÝ THĂM HỎI</h3>
-            <p>Gửi yêu cầu thăm hỏi ốm đau, hiếu hỉ và xuất Phiếu đề xuất theo định mức Quyết định 127.</p>
-        </a>
+        <label>Email cá nhân (Để nhận OTP):</label>
+        <input type="email" id="regEmail" placeholder="Nhập email chính xác">
+
+        <label>Tạo mật khẩu mới:</label>
+        <div class="input-group">
+            <input type="password" id="regPass" placeholder="Tối thiểu 6 ký tự">
+            <span class="toggle-password" onclick="togglePass('regPass')">👁️</span>
+        </div>
+
+        <button class="btn btn-primary" onclick="handleRegister()">XÁC NHẬN ĐĂNG KÝ</button>
+        <button class="btn btn-outline" onclick="showLogin()">QUAY LẠI ĐĂNG NHẬP</button>
     </div>
+</div>
 
-    <div class="footer">
-        Thiết kế bởi <b>Trần Công Đẹp (VDC)</b> - Điện thoại: 0963292882<br>
-        Ứng dụng quản lý nội bộ dành cho <b>Phòng KTVH & Đội QLLĐ 2</b><br>
-        Phiên bản hệ thống: <b>v2.8</b>
-    </div>
+<script>
+    // --- CẤU HÌNH FIREBASE QLDD-2025 CỦA ANH ĐẸP ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyALxXDNbFdXkI7XvHqiSNb1jnKjj0CbYnE",
+        authDomain: "qldd-2025.firebaseapp.com",
+        databaseURL: "https://qldd-2025-default-rtdb.firebaseio.com",
+        projectId: "qldd-2025",
+        storageBucket: "qldd-2025.firebasestorage.app",
+        messagingSenderId: "84684010166",
+        appId: "1:84684010166:web:bd9c3b5ae4227ee2812c17",
+        measurementId: "G-7E5BDTCSEZ"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxaig43qRs3BLv-C9fc96sI78pQgyCBrW8ozaFiC-SxZtLXvK52wcOzMFboxC74Hh4B/exec";
+
+    // Hiện/ẩn mật khẩu
+    function togglePass(id) {
+        const x = document.getElementById(id);
+        x.type = x.type === "password" ? "text" : "password";
+    }
+
+    // Tra cứu tên từ MSNV trong Google Sheet khi đăng ký
+    function lookupName() {
+        const id = document.getElementById('regMsnv').value;
+        const regName = document.getElementById('regName');
+        if(id.length >= 4) {
+            regName.innerText = "🔍 Đang kiểm tra danh sách...";
+            fetch(`${WEB_APP_URL}?action=lookup&msnv=${id}`)
+            .then(r => r.json())
+            .then(d => {
+                regName.innerText = (d.hoTen !== "Không tìm thấy") ? "✅ Chào đồng chí: " + d.hoTen : "❌ MSNV không tồn tại!";
+            });
+        }
+    }
+
+    // Xử lý Đăng ký và gửi mail xác thực
+    function handleRegister() {
+        const email = document.getElementById('regEmail').value;
+        const pass = document.getElementById('regPass').value;
+        const nameText = document.getElementById('regName').innerText;
+
+        if(!email || pass.length < 6 || !nameText.includes("✅")) {
+            return alert("Vui lòng nhập đúng MSNV, Email và mật khẩu >= 6 ký tự!");
+        }
+
+        auth.createUserWithEmailAndPassword(email, pass)
+        .then((userCredential) => {
+            userCredential.user.sendEmailVerification();
+            alert("Đăng ký thành công! Hệ thống đã gửi link xác thực vào Email của bạn. Vui lòng mở Email bấm xác nhận rồi mới có thể đăng nhập.");
+            showLogin();
+        })
+        .catch(e => alert("Lỗi: " + e.message));
+    }
+
+    // Xử lý Đăng nhập
+    function handleLogin() {
+        const email = document.getElementById('loginEmail').value;
+        const pass = document.getElementById('loginPass').value;
+
+        if(!email || !pass) return alert("Vui lòng nhập đầy đủ Email và Mật khẩu!");
+
+        auth.signInWithEmailAndPassword(email, pass)
+        .then((userCredential) => {
+            if(userCredential.user.emailVerified) {
+                // Đã xác thực email thành công -> Vào trang chính
+                window.location.href = "tham-hoi.html";
+            } else {
+                alert("Tài khoản này chưa được xác thực qua Email. Vui lòng kiểm tra hộp thư của bạn!");
+                auth.signOut();
+            }
+        })
+        .catch(e => alert("Thông tin đăng nhập không chính xác!"));
+    }
+
+    // Quên mật khẩu nhận mã qua Email
+    function forgotPass() {
+        const email = prompt("Nhập Email bạn đã đăng ký để nhận mã đặt lại mật khẩu:");
+        if (email) {
+            auth.sendPasswordResetEmail(email)
+            .then(() => alert("Hệ thống đã gửi hướng dẫn đặt lại mật khẩu vào Email của bạn."))
+            .catch(e => alert("Lỗi: " + e.message));
+        }
+    }
+
+    function showRegister() { document.getElementById('loginForm').classList.add('hidden'); document.getElementById('registerForm').classList.remove('hidden'); }
+    function showLogin() { document.getElementById('registerForm').classList.add('hidden'); document.getElementById('loginForm').classList.remove('hidden'); }
+</script>
 </body>
 </html>

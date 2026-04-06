@@ -13,13 +13,17 @@
         label { font-weight: bold; display: block; margin-top: 15px; color: #333; font-size: 14px; }
         input, select, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
         input[readonly] { background-color: #e9ecef; }
-        .btn-submit { background-color: var(--accent-color); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 25px; }
+        .dinh-muc-info { background: #fff3cd; color: #856404; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px; font-weight: bold; border: 1px solid #ffeeba; display: none; }
         
-        /* Kết quả phiếu */
-        #resultTicket { display: none; margin-top: 20px; border: 2px solid #333; padding: 20px; background: #fff; line-height: 1.6; position: relative; }
-        .ticket-header { text-align: center; font-weight: bold; text-transform: uppercase; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .file-section { background: #f1f8ff; padding: 15px; border-radius: 8px; margin-top: 10px; border: 1px dashed var(--primary-color); }
+        #previewContainer { margin-top: 10px; display: none; text-align: center; }
+        #imagePreview { max-width: 100%; max-height: 200px; border-radius: 5px; margin-top: 10px; }
+        
+        .btn-submit { background-color: var(--accent-color); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 25px; }
+        #resultTicket { display: none; border: 2px solid #333; padding: 20px; background: #fff; margin-top: 20px; }
+        .ticket-header { text-align: center; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
         .signature-row { display: flex; justify-content: space-between; margin-top: 30px; text-align: center; }
-        .footer { background: #333; color: white; text-align: center; padding: 15px 0; font-size: 12px; margin-top: 20px; }
+        .footer { background: #333; color: white; text-align: center; padding: 15px 0; font-size: 12px; width: 100%; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -30,7 +34,7 @@
 </div>
 
 <div class="container" id="formContainer">
-    <h3 style="color: var(--accent-color); text-align: center; margin-top: 0;">PHIẾU ĐỀ XUẤT THĂM HỎI</h3>
+    <h3 style="color: var(--accent-color); text-align: center; margin-top: 0;">ĐĂNG KÝ THĂM HỎI TRỰC TUYẾN</h3>
     <form id="formThamHoi">
         <label>Mã số nhân viên (MSNV):</label>
         <input type="text" id="msnv" placeholder="Nhập mã nhân viên" oninput="handleLookup()" required>
@@ -39,23 +43,40 @@
         <label>Họ tên ĐVCĐ:</label>
         <input type="text" id="hoTen" readonly required>
 
-        <label>Bộ phận (Dùng để xác định người lập):</label>
+        <label>Bộ phận công tác:</label>
         <select id="boPhan" required>
             <option value="">-- Chọn bộ phận --</option>
             <option value="KTVH">Phòng KTVH</option>
-            <option value="KHAC">Các bộ phận còn lại</option>
+            <option value="QLLD2">Đội QLLĐ 2</option>
         </select>
 
         <label>Nội dung thăm hỏi (Theo QĐ 127):</label>
-        <select id="chiTietLyDo" required>
-            <option value="">-- Chọn nội dung --</option>
-            <option data-tien="1.000.000" value="Kết hôn">Đoàn viên kết hôn (1.000.000đ)</option>
-            <option data-tien="500.000" value="Ốm đau">Đoàn viên nằm viện (500.000đ)</option>
-            <option data-tien="300.000" value="Thân nhân ốm">Thân nhân nằm viện (300.000đ)</option>
-            <option data-tien="1.000.000" value="Việc hiếu">Việc hiếu (1.000.000đ)</option>
+        <select id="chiTietLyDo" onchange="showDinhMuc()" required>
+            <option value="">-- Chọn nội dung cụ thể --</option>
+            <option data-tien="1.000.000" value="Kết hôn">Đoàn viên kết hôn (lần đầu)</option>
+            <option data-tien="500.000" value="Ốm đau">Đoàn viên nằm viện (từ 3 ngày trở lên)</option>
+            <option data-tien="300.000" value="Thân nhân ốm">Bố, mẹ, vợ, chồng, con nằm viện</option>
+            <option data-tien="1.000.000" value="Việc hiếu">Thân nhân (Tứ thân phụ mẫu, vợ, chồng, con) qua đời</option>
+            <option data-tien="1.000.000" value="ĐVCĐ qua đời">Đoàn viên công đoàn qua đời</option>
+            <option data-tien="Theo phê duyệt" value="Trợ cấp">Trợ cấp khó khăn đột xuất (Hỏa hoạn, thiên tai...)</option>
         </select>
 
-        <button type="button" class="btn-submit" onclick="processAndSave()">GỬI & XUẤT PHIẾU</button>
+        <div id="dinhMucBox" class="dinh-muc-info"></div>
+
+        <div class="file-section">
+            <label>Tải hồ sơ (📷 Chụp ảnh / PDF đơn thuốc, giấy viện):</label>
+            <input type="file" id="fileHoSo" accept="image/*,application/pdf" capture="environment" onchange="previewFile()">
+            <div id="previewContainer">
+                <p id="fileNameDisplay" style="font-size: 12px; color: blue;"></p>
+                <img id="imagePreview" src="" alt="Xem trước">
+                <button type="button" onclick="removeFile()" style="color:red; border:none; background:none; cursor:pointer;">[Xóa và chọn lại]</button>
+            </div>
+        </div>
+
+        <label>Ghi chú thêm:</label>
+        <textarea id="ghiChu" rows="2" placeholder="Tên bệnh viện, địa chỉ hoặc thông tin khác..."></textarea>
+
+        <button type="button" class="btn-submit" onclick="processAndSave()">GỬI & XUẤT PHIẾU ĐỀ XUẤT</button>
     </form>
 </div>
 
@@ -64,68 +85,96 @@
         CÔNG ĐOÀN CÔNG TY LĐCT TP.HCM<br>TỔ CÔNG ĐOÀN LĐ2-KT<br>--- PHIẾU ĐỀ XUẤT THĂM HỎI ---
     </div>
     <p><strong>Ngày lập:</strong> <span id="resDate"></span></p>
-    <p><strong>Họ tên ĐVCĐ:</strong> <span id="resName"></span> (<span id="resMsnv"></span>)</p>
-    <p><strong>Lý do:</strong> <span id="resLyDo"></span></p>
-    <p><strong>Số tiền đề xuất:</strong> <span id="resTien"></span> VNĐ</p>
+    <p><strong>Họ tên đoàn viên:</strong> <span id="resName"></span> (<span id="resMsnv"></span>)</p>
+    <p><strong>Bộ phận:</strong> <span id="resBoPhan"></span></p>
+    <p><strong>Lý do thăm hỏi:</strong> <span id="resLyDo"></span></p>
+    <p><strong>Số tiền hỗ trợ:</strong> <span id="resTien"></span> VNĐ</p>
     
     <div class="signature-row">
         <div>
             <strong>TỔ TRƯỞNG</strong><br><br><br>
-            Trần Công Đẹp
+            <strong>Trần Công Đẹp</strong>
         </div>
         <div>
             <strong>NGƯỜI LẬP (Tổ phó)</strong><br><br><br>
-            <span id="resNguoiLap"></span>
+            <strong id="resNguoiLap"></strong>
         </div>
     </div>
     <button class="btn-submit" onclick="window.print()" style="background:#444;">IN PHIẾU NÀY</button>
-    <button class="btn-submit" onclick="location.reload()" style="background:#eee; color:#333; margin-top:10px;">LẬP PHIẾU MỚI</button>
+    <button class="btn-submit" onclick="location.reload()" style="background:#eee; color:#333; margin-top:10px;">LẬP PHIẾU KHÁC</button>
 </div>
 
-<div class="footer">Xây dựng bởi Trần Công Đẹp - v2.6</div>
+<div class="footer">Xây dựng năm 2026 bởi Trần Công Đẹp - Điện thoại 0963292882 <br> <small>Phiên bản hệ thống: v2.7</small></div>
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6KpeyKNXEdEjM0MR4BFEU17JHvIMsLb8esPLaD-8weV9yrq-YjaZPQavQn7JS74r1kQ/exec";
 
-    // Hàm xử lý chính: Lưu Firebase + Hiển thị kết quả
+    function showDinhMuc() {
+        const select = document.getElementById('chiTietLyDo');
+        const box = document.getElementById('dinhMucBox');
+        const tien = select.options[select.selectedIndex].getAttribute('data-tien');
+        if (tien) {
+            box.innerHTML = `📢 Chế độ lãnh: ${tien} VNĐ`;
+            box.style.display = "block";
+        } else { box.style.display = "none"; }
+    }
+
+    function previewFile() {
+        const file = document.getElementById('fileHoSo').files[0];
+        const preview = document.getElementById('imagePreview');
+        const nameDisplay = document.getElementById('fileNameDisplay');
+        const container = document.getElementById('previewContainer');
+        
+        if (file) {
+            container.style.display = "block";
+            nameDisplay.innerText = "Tệp đã chọn: " + file.name;
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onloadend = () => { preview.src = reader.result; preview.style.display = "block"; };
+                reader.readAsDataURL(file);
+            } else { preview.style.display = "none"; }
+        }
+    }
+
+    function removeFile() {
+        document.getElementById('fileHoSo').value = "";
+        document.getElementById('previewContainer').style.display = "none";
+    }
+
     async function processAndSave() {
-        const msnv = document.getElementById('msnv').value;
         const hoTen = document.getElementById('hoTen').value;
         const boPhan = document.getElementById('boPhan').value;
         const selectLyDo = document.getElementById('chiTietLyDo');
-        const lyDoText = selectLyDo.options[selectLyDo.selectedIndex].text;
+        if (!hoTen || !boPhan || !selectLyDo.value) return alert("Vui lòng điền đủ thông tin!");
+
+        const msnv = document.getElementById('msnv').value;
+        const lyDo = selectLyDo.value;
         const soTien = selectLyDo.options[selectLyDo.selectedIndex].getAttribute('data-tien');
+        const nguoiLap = (boPhan === "KTVH") ? "Trương Nguyễn Hoài Thương" : "Trần Ba Phúc";
 
-        if (!hoTen || !boPhan || !selectLyDo.value) return alert("Vui lòng nhập đầy đủ thông tin!");
-
-        // Logic phân quyền người lập
-        let nguoiLap = (boPhan === "KTVH") ? "Trương Nguyễn Hoài Thương" : "Trần Ba Phúc";
-
-        // 1. Hiển thị kết quả lên giao diện
         document.getElementById('formContainer').style.display = "none";
         document.getElementById('resultTicket').style.display = "block";
         document.getElementById('resDate').innerText = new Date().toLocaleDateString('vi-VN');
         document.getElementById('resName').innerText = hoTen;
         document.getElementById('resMsnv').innerText = msnv;
-        document.getElementById('resLyDo').innerText = lyDoText;
+        document.getElementById('resBoPhan').innerText = (boPhan === "KTVH") ? "Phòng KTVH" : "Đội QLLĐ 2";
+        document.getElementById('resLyDo').innerText = lyDo;
         document.getElementById('resTien').innerText = soTien;
         document.getElementById('resNguoiLap').innerText = nguoiLap;
 
-        // 2. Lưu vào Firebase (Giả định anh đã cấu hình Firebase SDK ở đầu trang hoặc dùng App Script làm trung gian)
-        // Ở đây em gửi tiếp qua Web App để lưu tập trung vào Sheets/Firebase
-        fetch(`${WEB_APP_URL}?action=save&msnv=${msnv}&name=${hoTen}&lydo=${lyDoText}&tien=${soTien}&nguoiLap=${nguoiLap}`);
+        // Gửi Firebase qua Web App
+        fetch(`${WEB_APP_URL}?action=save&msnv=${msnv}&name=${hoTen}&lydo=${lyDo}&tien=${soTien}&nguoiLap=${nguoiLap}`);
     }
 
-    // Logic tra cứu MSNV giữ nguyên từ v2.5
     function handleLookup() {
         const msnv = document.getElementById('msnv').value.trim();
         if (msnv.length >= 4) {
-            document.getElementById('loadingName').innerText = "🔍 Đang tra...";
+            document.getElementById('loadingName').innerText = "🔍 Đang tra cứu...";
             fetch(`${WEB_APP_URL}?action=lookup&msnv=${msnv}`)
             .then(res => res.json())
             .then(data => {
                 document.getElementById('hoTen').value = (data.hoTen !== "Không tìm thấy") ? data.hoTen : "";
-                document.getElementById('loadingName').innerText = (data.hoTen !== "Không tìm thấy") ? "✅ Đã nhận diện" : "❌ Không thấy";
+                document.getElementById('loadingName').innerText = (data.hoTen !== "Không tìm thấy") ? "✅ Khớp danh sách" : "❌ Không tìm thấy";
             });
         }
     }

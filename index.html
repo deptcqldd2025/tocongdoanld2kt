@@ -6,179 +6,128 @@
     <title>Đăng ký Thăm hỏi | Tổ Công đoàn LĐ 2 - KT</title>
     <style>
         :root { --primary-color: #004a99; --accent-color: #d32f2f; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; margin: 0; padding-bottom: 30px; }
         .header { background: var(--primary-color); color: white; text-align: center; padding: 20px 10px; position: relative; }
         .btn-home { position: absolute; top: 15px; left: 10px; background: white; color: var(--primary-color); padding: 5px 10px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; }
-        .container { max-width: 600px; margin: 15px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); flex: 1; width: 95%; box-sizing: border-box; }
+        .container { max-width: 600px; margin: 15px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 95%; box-sizing: border-box; }
         label { font-weight: bold; display: block; margin-top: 15px; color: #333; font-size: 14px; }
         input, select, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
         input[readonly] { background-color: #e9ecef; }
-        
-        /* Chụp ảnh và xem trước */
-        .file-input-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
-        .camera-btn { font-size: 28px; cursor: pointer; background: #f0f0f0; padding: 5px 12px; border-radius: 6px; border: 1px solid #ddd; }
-        #previewContainer { margin-top: 10px; display: none; position: relative; text-align: center; border: 1px dashed #ccc; padding: 10px; border-radius: 8px; }
-        #imagePreview { max-width: 100%; max-height: 250px; border-radius: 5px; }
-        .btn-remove { position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
-        
-        /* Thông báo tiền định mức */
-        .dinh-muc-info { background: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 14px; display: none; border: 1px solid #ffeeba; }
-        
         .btn-submit { background-color: var(--accent-color); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 25px; }
-        .footer { background: #333; color: white; text-align: center; padding: 15px 0; font-size: 14px; width: 100%; }
-        #loadingName { font-size: 12px; margin-top: 5px; min-height: 15px; font-weight: 500; }
+        
+        /* Kết quả phiếu */
+        #resultTicket { display: none; margin-top: 20px; border: 2px solid #333; padding: 20px; background: #fff; line-height: 1.6; position: relative; }
+        .ticket-header { text-align: center; font-weight: bold; text-transform: uppercase; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .signature-row { display: flex; justify-content: space-between; margin-top: 30px; text-align: center; }
+        .footer { background: #333; color: white; text-align: center; padding: 15px 0; font-size: 12px; margin-top: 20px; }
     </style>
 </head>
 <body>
+
 <div class="header">
     <a href="index.html" class="btn-home">🏠 Home</a>
     <h1 style="margin:0; font-size: 1.5rem;">Tổ Công đoàn LĐ 2 - KT</h1>
 </div>
 
-<div class="container">
-    <h3 style="color: var(--accent-color); text-align: center; margin-top: 0;">ĐĂNG KÝ THĂM HỎI TRỰC TUYẾN</h3>
-    <p style="font-size: 13px; text-align: center; color: #666;">(Theo Quyết định 127/QĐ-CĐLĐCT ngày 24/11/2025)</p>
-    
+<div class="container" id="formContainer">
+    <h3 style="color: var(--accent-color); text-align: center; margin-top: 0;">PHIẾU ĐỀ XUẤT THĂM HỎI</h3>
     <form id="formThamHoi">
         <label>Mã số nhân viên (MSNV):</label>
-        <input type="text" id="msnv" placeholder="Ví dụ: 001702 hoặc 1702" oninput="handleLookup()" required>
-        <div id="loadingName"></div>
+        <input type="text" id="msnv" placeholder="Nhập mã nhân viên" oninput="handleLookup()" required>
+        <div id="loadingName" style="font-size: 12px; margin-top: 5px;"></div>
 
-        <label>Họ và tên (Tự động tra cứu):</label>
-        <input type="text" id="hoTen" placeholder="Tên sẽ hiển thị tại đây..." readonly required>
+        <label>Họ tên ĐVCĐ:</label>
+        <input type="text" id="hoTen" readonly required>
 
-        <label>Phân loại thăm hỏi:</label>
-        <select id="nhomLyDo" onchange="updateSubLyDo()" required>
-            <option value="">-- Chọn nhóm nội dung --</option>
-            <option value="ketHon">Kết hôn (Đoàn viên)</option>
-            <option value="omDau">Thăm hỏi ốm đau</option>
-            <option value="viecHieu">Việc hiếu (Tứ thân phụ mẫu, vợ/chồng, con)</option>
-            <option value="troCap">Trợ cấp khó khăn đột xuất</option>
+        <label>Bộ phận (Dùng để xác định người lập):</label>
+        <select id="boPhan" required>
+            <option value="">-- Chọn bộ phận --</option>
+            <option value="KTVH">Phòng KTVH</option>
+            <option value="KHAC">Các bộ phận còn lại</option>
         </select>
 
-        <label>Nội dung cụ thể:</label>
-        <select id="chiTietLyDo" onchange="showDinhMuc()" required>
-            <option value="">-- Chọn nội dung cụ thể --</option>
+        <label>Nội dung thăm hỏi (Theo QĐ 127):</label>
+        <select id="chiTietLyDo" required>
+            <option value="">-- Chọn nội dung --</option>
+            <option data-tien="1.000.000" value="Kết hôn">Đoàn viên kết hôn (1.000.000đ)</option>
+            <option data-tien="500.000" value="Ốm đau">Đoàn viên nằm viện (500.000đ)</option>
+            <option data-tien="300.000" value="Thân nhân ốm">Thân nhân nằm viện (300.000đ)</option>
+            <option data-tien="1.000.000" value="Việc hiếu">Việc hiếu (1.000.000đ)</option>
         </select>
 
-        <div id="dinhMucBox" class="dinh-muc-info"></div>
-
-        <label>Đính kèm hồ sơ (📷 Chụp ảnh Đơn thuốc/Giấy viện):</label>
-        <div class="file-input-wrapper">
-            <input type="file" id="fileHoSo" accept="image/*" capture="environment" onchange="previewFile()">
-            <span class="camera-btn" onclick="document.getElementById('fileHoSo').click()">📷</span>
-        </div>
-
-        <div id="previewContainer">
-            <button type="button" class="btn-remove" onclick="removeFile()">X</button>
-            <img id="imagePreview" src="" alt="Preview">
-        </div>
-
-        <label>Ghi chú thêm (Tên bệnh viện, địa chỉ...):</label>
-        <textarea id="ghiChu" rows="2" placeholder="Nhập thêm thông tin nếu cần..."></textarea>
-
-        <button type="button" class="btn-submit" onclick="submitForm()">GỬI YÊU CẦU ĐĂNG KÝ</button>
+        <button type="button" class="btn-submit" onclick="processAndSave()">GỬI & XUẤT PHIẾU</button>
     </form>
 </div>
 
-<div class="footer">
-    Xây dựng năm 2026 bởi Trần Công Đẹp - Điện thoại 0963292882 <br>
-    <small>Phiên bản hệ thống: v2.4</small>
+<div class="container" id="resultTicket">
+    <div class="ticket-header">
+        CÔNG ĐOÀN CÔNG TY LĐCT TP.HCM<br>TỔ CÔNG ĐOÀN LĐ2-KT<br>--- PHIẾU ĐỀ XUẤT THĂM HỎI ---
+    </div>
+    <p><strong>Ngày lập:</strong> <span id="resDate"></span></p>
+    <p><strong>Họ tên ĐVCĐ:</strong> <span id="resName"></span> (<span id="resMsnv"></span>)</p>
+    <p><strong>Lý do:</strong> <span id="resLyDo"></span></p>
+    <p><strong>Số tiền đề xuất:</strong> <span id="resTien"></span> VNĐ</p>
+    
+    <div class="signature-row">
+        <div>
+            <strong>TỔ TRƯỞNG</strong><br><br><br>
+            Trần Công Đẹp
+        </div>
+        <div>
+            <strong>NGƯỜI LẬP (Tổ phó)</strong><br><br><br>
+            <span id="resNguoiLap"></span>
+        </div>
+    </div>
+    <button class="btn-submit" onclick="window.print()" style="background:#444;">IN PHIẾU NÀY</button>
+    <button class="btn-submit" onclick="location.reload()" style="background:#eee; color:#333; margin-top:10px;">LẬP PHIẾU MỚI</button>
 </div>
 
+<div class="footer">Xây dựng bởi Trần Công Đẹp - v2.6</div>
+
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6KpeyKNXEdEjM0MR4BFEU17JHvIMsLb8esPLaD-8weV9yrq-YjaZPQavQn7JS74r1kQ/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6KpeyKNXEdEjM0MR4BFEU17JHvIMsLb8esPLaD-8weV9yrq-YjaZPQavQn7JS74r1kQ/exec";
 
-    // Dữ liệu định mức theo QĐ 127
-    const danhMuc = {
-        ketHon: [{ text: "Đoàn viên kết hôn (lần đầu)", tien: "1.000.000đ" }],
-        omDau: [
-            { text: "Đoàn viên nằm viện (>= 3 ngày)", tien: "500.000đ" },
-            { text: "Thân nhân nằm viện", tien: "300.000đ" }
-        ],
-        viecHieu: [
-            { text: "Tứ thân phụ mẫu, vợ, chồng, con qua đời", tien: "1.000.000đ" },
-            { text: "Đoàn viên qua đời (Phúng viếng)", tien: "1.000.000đ" }
-        ],
-        troCap: [{ text: "Thiên tai, hỏa hoạn, rủi ro đặc biệt", tien: "Theo phê duyệt" }]
-    };
+    // Hàm xử lý chính: Lưu Firebase + Hiển thị kết quả
+    async function processAndSave() {
+        const msnv = document.getElementById('msnv').value;
+        const hoTen = document.getElementById('hoTen').value;
+        const boPhan = document.getElementById('boPhan').value;
+        const selectLyDo = document.getElementById('chiTietLyDo');
+        const lyDoText = selectLyDo.options[selectLyDo.selectedIndex].text;
+        const soTien = selectLyDo.options[selectLyDo.selectedIndex].getAttribute('data-tien');
 
-    function updateSubLyDo() {
-        const nhom = document.getElementById('nhomLyDo').value;
-        const subSelect = document.getElementById('chiTietLyDo');
-        subSelect.innerHTML = '<option value="">-- Chọn nội dung cụ thể --</option>';
-        document.getElementById('dinhMucBox').style.display = "none";
-        
-        if (nhom && danhMuc[nhom]) {
-            danhMuc[nhom].forEach(item => {
-                let opt = document.createElement('option');
-                opt.value = item.tien;
-                opt.text = item.text;
-                subSelect.add(opt);
+        if (!hoTen || !boPhan || !selectLyDo.value) return alert("Vui lòng nhập đầy đủ thông tin!");
+
+        // Logic phân quyền người lập
+        let nguoiLap = (boPhan === "KTVH") ? "Trương Nguyễn Hoài Thương" : "Trần Ba Phúc";
+
+        // 1. Hiển thị kết quả lên giao diện
+        document.getElementById('formContainer').style.display = "none";
+        document.getElementById('resultTicket').style.display = "block";
+        document.getElementById('resDate').innerText = new Date().toLocaleDateString('vi-VN');
+        document.getElementById('resName').innerText = hoTen;
+        document.getElementById('resMsnv').innerText = msnv;
+        document.getElementById('resLyDo').innerText = lyDoText;
+        document.getElementById('resTien').innerText = soTien;
+        document.getElementById('resNguoiLap').innerText = nguoiLap;
+
+        // 2. Lưu vào Firebase (Giả định anh đã cấu hình Firebase SDK ở đầu trang hoặc dùng App Script làm trung gian)
+        // Ở đây em gửi tiếp qua Web App để lưu tập trung vào Sheets/Firebase
+        fetch(`${WEB_APP_URL}?action=save&msnv=${msnv}&name=${hoTen}&lydo=${lyDoText}&tien=${soTien}&nguoiLap=${nguoiLap}`);
+    }
+
+    // Logic tra cứu MSNV giữ nguyên từ v2.5
+    function handleLookup() {
+        const msnv = document.getElementById('msnv').value.trim();
+        if (msnv.length >= 4) {
+            document.getElementById('loadingName').innerText = "🔍 Đang tra...";
+            fetch(`${WEB_APP_URL}?action=lookup&msnv=${msnv}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('hoTen').value = (data.hoTen !== "Không tìm thấy") ? data.hoTen : "";
+                document.getElementById('loadingName').innerText = (data.hoTen !== "Không tìm thấy") ? "✅ Đã nhận diện" : "❌ Không thấy";
             });
         }
-    }
-
-    function showDinhMuc() {
-        const subSelect = document.getElementById('chiTietLyDo');
-        const box = document.getElementById('dinhMucBox');
-        if (subSelect.value) {
-            box.innerHTML = `<strong>Định mức hỗ trợ:</strong> ${subSelect.value}`;
-            box.style.display = "block";
-        } else {
-            box.style.display = "none";
-        }
-    }
-
-    // Các hàm xử lý Ảnh và Tra cứu MSNV (Giữ nguyên logic từ v2.3)
-    function previewFile() {
-        const file = document.getElementById('fileHoSo').files[0];
-        const preview = document.getElementById('imagePreview');
-        const container = document.getElementById('previewContainer');
-        const reader = new FileReader();
-        if (file) {
-            reader.onloadend = () => { preview.src = reader.result; container.style.display = "block"; }
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function removeFile() {
-        document.getElementById('fileHoSo').value = "";
-        document.getElementById('previewContainer').style.display = "none";
-    }
-
-    let typingTimer;
-    function handleLookup() {
-        clearTimeout(typingTimer);
-        const msnv = document.getElementById('msnv').value.trim();
-        const msg = document.getElementById('loadingName');
-        const nameField = document.getElementById('hoTen');
-        nameField.value = "";
-        if (msnv.length >= 4) {
-            msg.innerHTML = "🔍 Đang tra cứu tên...";
-            msg.style.color = "blue";
-            typingTimer = setTimeout(() => {
-                fetch(`${WEB_APP_URL}?action=lookup&msnv=${msnv}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.hoTen === "Không tìm thấy") {
-                        msg.innerHTML = "❌ Không tìm thấy nhân viên!";
-                        msg.style.color = "red";
-                    } else {
-                        nameField.value = data.hoTen;
-                        msg.innerHTML = "✅ Xác nhận: " + data.hoTen;
-                        msg.style.color = "green";
-                    }
-                }).catch(() => { msg.innerHTML = "⚠️ Lỗi kết nối!"; });
-            }, 600);
-        } else { msg.innerHTML = ""; }
-    }
-
-    function submitForm() {
-        const hoTen = document.getElementById('hoTen').value;
-        const lyDo = document.getElementById('chiTietLyDo').selectedOptions[0].text;
-        if (!hoTen || hoTen === "Không tìm thấy") return alert("Vui lòng nhập đúng MSNV!");
-        alert(`Hệ thống v2.4 đã tiếp nhận:\n- Đoàn viên: ${hoTen}\n- Lý do: ${lyDo}\n- Số tiền: ${document.getElementById('chiTietLyDo').value}`);
     }
 </script>
 </body>

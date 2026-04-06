@@ -3,181 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký Thăm hỏi | Tổ Công đoàn LĐ 2 - KT</title>
+    <title>Hệ thống Quản lý Tổ Công đoàn LĐ 2 - KT</title>
     <style>
-        :root { --primary-color: #004a99; --accent-color: #d32f2f; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; margin: 0; padding-bottom: 30px; }
-        .header { background: var(--primary-color); color: white; text-align: center; padding: 20px 10px; position: relative; }
-        .btn-home { position: absolute; top: 15px; left: 10px; background: white; color: var(--primary-color); padding: 5px 10px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; }
-        .container { max-width: 600px; margin: 15px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 95%; box-sizing: border-box; }
-        label { font-weight: bold; display: block; margin-top: 15px; color: #333; font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        input[readonly] { background-color: #e9ecef; }
-        .dinh-muc-info { background: #fff3cd; color: #856404; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px; font-weight: bold; border: 1px solid #ffeeba; display: none; }
-        
-        .file-section { background: #f1f8ff; padding: 15px; border-radius: 8px; margin-top: 10px; border: 1px dashed var(--primary-color); }
-        #previewContainer { margin-top: 10px; display: none; text-align: center; }
-        #imagePreview { max-width: 100%; max-height: 200px; border-radius: 5px; margin-top: 10px; }
-        
-        .btn-submit { background-color: var(--accent-color); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 25px; }
-        #resultTicket { display: none; border: 2px solid #333; padding: 20px; background: #fff; margin-top: 20px; }
-        .ticket-header { text-align: center; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
-        .signature-row { display: flex; justify-content: space-between; margin-top: 30px; text-align: center; }
-        .footer { background: #333; color: white; text-align: center; padding: 15px 0; font-size: 12px; width: 100%; margin-top: 20px; }
+        :root { 
+            --primary-color: #004a99; 
+            --accent-color: #d32f2f; 
+            --bg-color: #f0f2f5;
+        }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-color); 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
+        }
+        .header { 
+            background: var(--primary-color); 
+            color: white; 
+            text-align: center; 
+            padding: 30px 15px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .header h1 { margin: 0; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        .header p { margin: 10px 0 0; opacity: 0.9; font-size: 14px; }
+
+        .container { 
+            flex: 1; 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            padding: 40px 20px; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 25px; 
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .nav-card { 
+            background: white; 
+            padding: 30px; 
+            text-align: center; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+            text-decoration: none; 
+            color: #333; 
+            transition: all 0.3s ease; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            border-top: 5px solid transparent;
+        }
+        .nav-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15); 
+        }
+        .card-thongbao:hover { border-top-color: var(--primary-color); }
+        .card-thamhoi:hover { border-top-color: var(--accent-color); }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+        .bg-blue { background-color: #e7f0ff; }
+        .bg-red { background-color: #ffebee; }
+
+        .nav-card h3 { 
+            margin: 10px 0; 
+            font-size: 1.4rem; 
+            color: var(--primary-color); 
+        }
+        .card-thamhoi h3 { color: var(--accent-color); }
+
+        .nav-card p { 
+            font-size: 15px; 
+            color: #666; 
+            line-height: 1.5; 
+            margin: 0;
+        }
+
+        .footer { 
+            background: #222; 
+            color: #aaa; 
+            text-align: center; 
+            padding: 20px; 
+            font-size: 13px; 
+            line-height: 1.8;
+        }
+        .footer b { color: #fff; }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.4rem; }
+            .container { padding: 20px; }
+        }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <a href="index.html" class="btn-home">🏠 Home</a>
-    <h1 style="margin:0; font-size: 1.5rem;">Tổ Công đoàn LĐ 2 - KT</h1>
-</div>
-
-<div class="container" id="formContainer">
-    <h3 style="color: var(--accent-color); text-align: center; margin-top: 0;">ĐĂNG KÝ THĂM HỎI TRỰC TUYẾN</h3>
-    <form id="formThamHoi">
-        <label>Mã số nhân viên (MSNV):</label>
-        <input type="text" id="msnv" placeholder="Nhập mã nhân viên" oninput="handleLookup()" required>
-        <div id="loadingName" style="font-size: 12px; margin-top: 5px;"></div>
-
-        <label>Họ tên ĐVCĐ:</label>
-        <input type="text" id="hoTen" readonly required>
-
-        <label>Bộ phận công tác:</label>
-        <select id="boPhan" required>
-            <option value="">-- Chọn bộ phận --</option>
-            <option value="KTVH">Phòng KTVH</option>
-            <option value="QLLD2">Đội QLLĐ 2</option>
-        </select>
-
-        <label>Nội dung thăm hỏi (Theo QĐ 127):</label>
-        <select id="chiTietLyDo" onchange="showDinhMuc()" required>
-            <option value="">-- Chọn nội dung cụ thể --</option>
-            <option data-tien="1.000.000" value="Kết hôn">Đoàn viên kết hôn (lần đầu)</option>
-            <option data-tien="500.000" value="Ốm đau">Đoàn viên nằm viện (từ 3 ngày trở lên)</option>
-            <option data-tien="300.000" value="Thân nhân ốm">Bố, mẹ, vợ, chồng, con nằm viện</option>
-            <option data-tien="1.000.000" value="Việc hiếu">Thân nhân (Tứ thân phụ mẫu, vợ, chồng, con) qua đời</option>
-            <option data-tien="1.000.000" value="ĐVCĐ qua đời">Đoàn viên công đoàn qua đời</option>
-            <option data-tien="Theo phê duyệt" value="Trợ cấp">Trợ cấp khó khăn đột xuất (Hỏa hoạn, thiên tai...)</option>
-        </select>
-
-        <div id="dinhMucBox" class="dinh-muc-info"></div>
-
-        <div class="file-section">
-            <label>Tải hồ sơ (📷 Chụp ảnh / PDF đơn thuốc, giấy viện):</label>
-            <input type="file" id="fileHoSo" accept="image/*,application/pdf" capture="environment" onchange="previewFile()">
-            <div id="previewContainer">
-                <p id="fileNameDisplay" style="font-size: 12px; color: blue;"></p>
-                <img id="imagePreview" src="" alt="Xem trước">
-                <button type="button" onclick="removeFile()" style="color:red; border:none; background:none; cursor:pointer;">[Xóa và chọn lại]</button>
-            </div>
-        </div>
-
-        <label>Ghi chú thêm:</label>
-        <textarea id="ghiChu" rows="2" placeholder="Tên bệnh viện, địa chỉ hoặc thông tin khác..."></textarea>
-
-        <button type="button" class="btn-submit" onclick="processAndSave()">GỬI & XUẤT PHIẾU ĐỀ XUẤT</button>
-    </form>
-</div>
-
-<div class="container" id="resultTicket">
-    <div class="ticket-header">
-        CÔNG ĐOÀN CÔNG TY LĐCT TP.HCM<br>TỔ CÔNG ĐOÀN LĐ2-KT<br>--- PHIẾU ĐỀ XUẤT THĂM HỎI ---
+    <div class="header">
+        <h1>Tổ Công đoàn LĐ 2 - KT</h1>
+        <p>Hệ thống hỗ trợ Đoàn viên Công đoàn trực tuyến</p>
     </div>
-    <p><strong>Ngày lập:</strong> <span id="resDate"></span></p>
-    <p><strong>Họ tên đoàn viên:</strong> <span id="resName"></span> (<span id="resMsnv"></span>)</p>
-    <p><strong>Bộ phận:</strong> <span id="resBoPhan"></span></p>
-    <p><strong>Lý do thăm hỏi:</strong> <span id="resLyDo"></span></p>
-    <p><strong>Số tiền hỗ trợ:</strong> <span id="resTien"></span> VNĐ</p>
-    
-    <div class="signature-row">
-        <div>
-            <strong>TỔ TRƯỞNG</strong><br><br><br>
-            <strong>Trần Công Đẹp</strong>
-        </div>
-        <div>
-            <strong>NGƯỜI LẬP (Tổ phó)</strong><br><br><br>
-            <strong id="resNguoiLap"></strong>
-        </div>
+
+    <div class="container">
+        <a href="thong-bao.html" class="nav-card card-thongbao">
+            <div class="icon-circle bg-blue">📢</div>
+            <h3>BẢNG THÔNG BÁO</h3>
+            <p>Tra cứu văn bản, danh sách chúc mừng sinh nhật và các thông báo mới nhất từ Công đoàn.</p>
+        </a>
+
+        <a href="tham-hoi.html" class="nav-card card-thamhoi">
+            <div class="icon-circle bg-red">🏥</div>
+            <h3>ĐĂNG KÝ THĂM HỎI</h3>
+            <p>Gửi yêu cầu thăm hỏi ốm đau, hiếu hỉ và xuất Phiếu đề xuất theo định mức Quyết định 127.</p>
+        </a>
     </div>
-    <button class="btn-submit" onclick="window.print()" style="background:#444;">IN PHIẾU NÀY</button>
-    <button class="btn-submit" onclick="location.reload()" style="background:#eee; color:#333; margin-top:10px;">LẬP PHIẾU KHÁC</button>
-</div>
 
-<div class="footer">Xây dựng năm 2026 bởi Trần Công Đẹp - Điện thoại 0963292882 <br> <small>Phiên bản hệ thống: v2.7</small></div>
+    <div class="footer">
+        Thiết kế bởi <b>Trần Công Đẹp (VDC)</b> - Điện thoại: 0963292882<br>
+        Ứng dụng quản lý nội bộ dành cho <b>Phòng KTVH & Đội QLLĐ 2</b><br>
+        Phiên bản hệ thống: <b>v2.8</b>
+    </div>
 
-<script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx6KpeyKNXEdEjM0MR4BFEU17JHvIMsLb8esPLaD-8weV9yrq-YjaZPQavQn7JS74r1kQ/exec";
-
-    function showDinhMuc() {
-        const select = document.getElementById('chiTietLyDo');
-        const box = document.getElementById('dinhMucBox');
-        const tien = select.options[select.selectedIndex].getAttribute('data-tien');
-        if (tien) {
-            box.innerHTML = `📢 Chế độ lãnh: ${tien} VNĐ`;
-            box.style.display = "block";
-        } else { box.style.display = "none"; }
-    }
-
-    function previewFile() {
-        const file = document.getElementById('fileHoSo').files[0];
-        const preview = document.getElementById('imagePreview');
-        const nameDisplay = document.getElementById('fileNameDisplay');
-        const container = document.getElementById('previewContainer');
-        
-        if (file) {
-            container.style.display = "block";
-            nameDisplay.innerText = "Tệp đã chọn: " + file.name;
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onloadend = () => { preview.src = reader.result; preview.style.display = "block"; };
-                reader.readAsDataURL(file);
-            } else { preview.style.display = "none"; }
-        }
-    }
-
-    function removeFile() {
-        document.getElementById('fileHoSo').value = "";
-        document.getElementById('previewContainer').style.display = "none";
-    }
-
-    async function processAndSave() {
-        const hoTen = document.getElementById('hoTen').value;
-        const boPhan = document.getElementById('boPhan').value;
-        const selectLyDo = document.getElementById('chiTietLyDo');
-        if (!hoTen || !boPhan || !selectLyDo.value) return alert("Vui lòng điền đủ thông tin!");
-
-        const msnv = document.getElementById('msnv').value;
-        const lyDo = selectLyDo.value;
-        const soTien = selectLyDo.options[selectLyDo.selectedIndex].getAttribute('data-tien');
-        const nguoiLap = (boPhan === "KTVH") ? "Trương Nguyễn Hoài Thương" : "Trần Ba Phúc";
-
-        document.getElementById('formContainer').style.display = "none";
-        document.getElementById('resultTicket').style.display = "block";
-        document.getElementById('resDate').innerText = new Date().toLocaleDateString('vi-VN');
-        document.getElementById('resName').innerText = hoTen;
-        document.getElementById('resMsnv').innerText = msnv;
-        document.getElementById('resBoPhan').innerText = (boPhan === "KTVH") ? "Phòng KTVH" : "Đội QLLĐ 2";
-        document.getElementById('resLyDo').innerText = lyDo;
-        document.getElementById('resTien').innerText = soTien;
-        document.getElementById('resNguoiLap').innerText = nguoiLap;
-
-        // Gửi Firebase qua Web App
-        fetch(`${WEB_APP_URL}?action=save&msnv=${msnv}&name=${hoTen}&lydo=${lyDo}&tien=${soTien}&nguoiLap=${nguoiLap}`);
-    }
-
-    function handleLookup() {
-        const msnv = document.getElementById('msnv').value.trim();
-        if (msnv.length >= 4) {
-            document.getElementById('loadingName').innerText = "🔍 Đang tra cứu...";
-            fetch(`${WEB_APP_URL}?action=lookup&msnv=${msnv}`)
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('hoTen').value = (data.hoTen !== "Không tìm thấy") ? data.hoTen : "";
-                document.getElementById('loadingName').innerText = (data.hoTen !== "Không tìm thấy") ? "✅ Khớp danh sách" : "❌ Không tìm thấy";
-            });
-        }
-    }
-</script>
 </body>
 </html>

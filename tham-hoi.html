@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phiếu Thăm Hỏi v3.9 | Tổ CD LĐ2-KT</title>
+    <title>Phiếu Thăm Hỏi v4.0 | Tổ CD LĐ2-KT</title>
     <style>
         :root { --primary: #004a99; --accent: #d32f2f; }
         body { font-family: 'Times New Roman', Times, serif; background: #f4f7f6; margin: 0; padding-bottom: 50px; }
@@ -37,7 +37,7 @@
 <div class="header">
     <a href="index.html" class="btn-home">🏠 TRANG CHỦ</a>
     <h1 style="margin:0;">Hệ thống Thăm hỏi Công đoàn</h1>
-    <small>Phiên bản: v3.9 (Xử lý Permission Drive)</small>
+    <small>Phiên bản: v4.0 (Force Authorize Drive)</small>
 </div>
 
 <div class="container" id="formContainer">
@@ -139,10 +139,10 @@
 
     async function startUpload() {
         const file = document.getElementById('fileInput').files[0];
-        if(!file || !document.getElementById('name').value) return alert("Vui lòng chụp ảnh hồ sơ trước!");
+        if(!file || !document.getElementById('name').value) return alert("Vui lòng chụp ảnh hồ sơ!");
 
         const btn = document.getElementById('btnSubmit');
-        btn.innerText = "⏳ ĐANG LƯU DRIVE... (ĐỪNG TẮT TRANG)";
+        btn.innerText = "⏳ ĐANG LƯU HỒ SƠ... VUI LÒNG ĐỢI";
         btn.disabled = true;
 
         const reader = new FileReader();
@@ -160,7 +160,7 @@
                 if(result.result === "success") {
                     showFinal();
                 } else { alert("Lỗi hệ thống: " + result.message); }
-            } catch (e) { alert("Lỗi kết nối Server!"); }
+            } catch (e) { alert("Lỗi kết nối Server! Nhớ Deploy GAS phiên bản mới nhất."); }
             finally { btn.innerText = "XUẤT PHIẾU & LƯU HỒ SƠ"; btn.disabled = false; }
         };
     }
